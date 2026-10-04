@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Recognition & Attendance System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">👤</div>
+      <div class="logo-text">
+        <h1>FacePass AI</h1>
+        <p>Recognition & Attendance</p>
+      </div>
+    </a>
+
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
+
+    <nav id="mainNav">
+      <a href="index.html" class="active">Live Scanner</a>
+      <a href="register.html">Register Face</a>
+      <a href="logs.html">Attendance Logs</a>
+      <a href="users.html">Enrolled Faces</a>
+      <button class="btn-settings" id="btnOpenSettings" title="Configure Backend API URL">
+        ⚙️ Backend API
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h2>Live Face Scanner</h2>
+        <p>Position your face in front of the camera to verify identity and record attendance.</p>
+      </div>
+      <div>
+        <span id="systemStatusBadge" class="badge badge-info">Initializing System...</span>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <h3 id="statTotalUsers">0</h3>
+          <p>Enrolled Faces</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">📅</div>
+        <div class="stat-info">
+          <h3 id="statTodayLogs">0</h3>
+          <p>Today's Scans</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon cyan">⚡</div>
+        <div class="stat-info">
+          <h3 id="statAccuracy">99.4%</h3>
+          <p>AI Model Accuracy</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scanner & Activity Feed -->
+    <div class="scanner-grid">
+      <!-- Left: Camera Viewport -->
+      <div class="card-panel">
+        <div class="card-title">
+          <h3>📹 Real-Time Camera Feed</h3>
+          <span id="cameraStatusPill" class="badge badge-warning">Camera Offline</span>
+        </div>
+
+        <div class="camera-wrapper">
+          <video id="videoFeed" autoplay playsinline muted></video>
+          <canvas id="overlayCanvas"></canvas>
+          <div id="faceTarget" class="camera-overlay-target"></div>
+          <div id="scannerLaser" class="scanner-laser"></div>
+
+          <!-- Loading Overlay -->
+          <div id="loadingOverlay" class="camera-loading-overlay">
+            <div class="spinner"></div>
+            <h4 id="loadingText">Loading AI Face Models...</h4>
+            <p style="font-size: 0.82rem;">Please allow camera permissions when prompted.</p>
+          </div>
+        </div>
+
+        <div class="camera-controls">
+          <button id="btnStartCamera" class="btn">
+            ▶️ Start Camera
+          </button>
+          <button id="btnStopCamera" class="btn btn-secondary">
+            ⏸️ Stop Camera
+          </button>
+          <a href="register.html" class="btn btn-secondary">
+            ➕ Register New Face
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Recognition Card & Recent Activity -->
+      <div class="card-panel">
+        <div class="card-title">
+          <h3>🔔 Recent Scan Activity</h3>
+          <a href="logs.html" style="font-size: 0.85rem; color: var(--primary); text-decoration: none;">View All →</a>
+        </div>
+
+        <!-- Latest Match Banner -->
+        <div id="latestMatchCard" style="display: none; padding: 1rem; border-radius: var(--radius-md); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 2rem;">✅</div>
+            <div>
+              <h4 id="latestMatchName" style="color: #34d399; font-size: 1.1rem; margin-bottom: 2px;">Recognized</h4>
+              <p id="latestMatchDetails" style="font-size: 0.82rem; color: var(--text-muted);">Attendance recorded</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-feed" id="recentActivityFeed">
+          <!-- Populated dynamically via JS -->
+          <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0;">
+            No scans recorded yet today. Stand in front of camera to scan.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal (Configure Backend API URL) -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ Backend API Configuration</h3>
+        <button class="modal-close" id="btnCloseSettings">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        Configure the backend URL. Use <code>http://localhost:5000</code> for local testing, or your deployed Render URL (e.g. <code>https://face-recognition-backend.onrender.com</code>).
+      </p>
+      <div class="form-group">
+        <label for="backendUrlInput">Backend API URL:</label>
+        <input type="text" id="backendUrlInput" class="form-control" placeholder="https://your-backend.onrender.com">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('settingsModal').classList.remove('show')">Cancel</button>
+        <button class="btn" id="btnSaveSettings">Save & Test Connection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 FacePass AI — Fullstack Face Recognition System | Deployed on <a href="https://vercel.com" target="_blank">Vercel</a> & <a href="https://render.com" target="_blank">Render</a></p>
+  </footer>
+
+  <!-- Face API Script from High-Availability CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
+  <!-- Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/face-utils.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

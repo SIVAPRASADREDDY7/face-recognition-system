@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enrolled Faces — FacePass AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">👤</div>
+      <div class="logo-text">
+        <h1>FacePass AI</h1>
+        <p>Recognition & Attendance</p>
+      </div>
+    </a>
+
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
+
+    <nav id="mainNav">
+      <a href="index.html">Live Scanner</a>
+      <a href="register.html">Register Face</a>
+      <a href="logs.html">Attendance Logs</a>
+      <a href="users.html" class="active">Enrolled Faces</a>
+      <button class="btn-settings" id="btnOpenSettings" title="Configure Backend API URL">
+        ⚙️ Backend API
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="page-header">
+      <div>
+        <h2>Enrolled Faces Directory</h2>
+        <p>Manage enrolled individuals, check their biometric status, or remove profiles.</p>
+      </div>
+      <div>
+        <a href="register.html" class="btn">➕ Enroll New Face</a>
+      </div>
+    </div>
+
+    <!-- Search Bar Card -->
+    <div class="card-panel" style="margin-bottom: 1.5rem; padding: 1.25rem 1.75rem;">
+      <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 250px;">
+          <input type="text" id="searchUserInput" class="form-control" placeholder="🔍 Search enrolled users by name, email, department...">
+        </div>
+        <div id="usersCountPill" class="badge badge-info" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+          0 Enrolled Users
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Grid -->
+    <div class="users-grid" id="usersGridContainer">
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem 0;">
+        <div class="spinner" style="margin: 0 auto 1rem;"></div>
+        Loading enrolled users...
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ Backend API Configuration</h3>
+        <button class="modal-close" id="btnCloseSettings">&times;</button>
+      </div>
+      <div class="form-group">
+        <label for="backendUrlInput">Backend API URL:</label>
+        <input type="text" id="backendUrlInput" class="form-control" placeholder="https://your-backend.onrender.com">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('settingsModal').classList.remove('show')">Cancel</button>
+        <button class="btn" id="btnSaveSettings">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 FacePass AI — Fullstack Face Recognition System | Deployed on <a href="https://vercel.com" target="_blank">Vercel</a> & <a href="https://render.com" target="_blank">Render</a></p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/users.js"></script>
+</body>
+</html>

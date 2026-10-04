@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Face — FacePass AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">👤</div>
+      <div class="logo-text">
+        <h1>FacePass AI</h1>
+        <p>Recognition & Attendance</p>
+      </div>
+    </a>
+
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
+
+    <nav id="mainNav">
+      <a href="index.html">Live Scanner</a>
+      <a href="register.html" class="active">Register Face</a>
+      <a href="logs.html">Attendance Logs</a>
+      <a href="users.html">Enrolled Faces</a>
+      <button class="btn-settings" id="btnOpenSettings" title="Configure Backend API URL">
+        ⚙️ Backend API
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="page-header">
+      <div>
+        <h2>Enroll New Face</h2>
+        <p>Align your face within the guide, fill in user details, and click Capture to save facial descriptors.</p>
+      </div>
+      <div>
+        <a href="index.html" class="btn btn-secondary">← Back to Scanner</a>
+      </div>
+    </div>
+
+    <div class="scanner-grid">
+      <!-- Left: Camera Preview & Face Alignment -->
+      <div class="card-panel">
+        <div class="card-title">
+          <h3>📷 Face Camera Alignment</h3>
+          <span id="faceDetectionStatus" class="badge badge-warning">Looking for Face...</span>
+        </div>
+
+        <div class="camera-wrapper">
+          <video id="regVideo" autoplay playsinline muted></video>
+          <canvas id="regCanvas"></canvas>
+          <div id="regFaceTarget" class="camera-overlay-target"></div>
+
+          <!-- Loading overlay -->
+          <div id="regLoadingOverlay" class="camera-loading-overlay">
+            <div class="spinner"></div>
+            <h4 id="regLoadingText">Initializing Camera & Models...</h4>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+          💡 <strong>Tips for Best Accuracy:</strong>
+          <ul style="margin-left: 1.25rem; margin-top: 6px;">
+            <li>Ensure good, even lighting on your face.</li>
+            <li>Look directly at the webcam without glasses or masks.</li>
+            <li>Hold still when the oval turns <span style="color: var(--success); font-weight: bold;">Green</span>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right: User Information Form -->
+      <div class="card-panel">
+        <div class="card-title">
+          <h3>📝 User Information</h3>
+        </div>
+
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="userName">Full Name *</label>
+            <input type="text" id="userName" class="form-control" placeholder="e.g. Sivaprasad Reddy" required>
+          </div>
+
+          <div class="form-group">
+            <label for="userEmail">Email Address *</label>
+            <input type="email" id="userEmail" class="form-control" placeholder="e.g. siva@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="userDepartment">Department / Group</label>
+            <input type="text" id="userDepartment" class="form-control" placeholder="e.g. Engineering, Sales, Medical">
+          </div>
+
+          <div class="form-group">
+            <label for="userRole">Role</label>
+            <select id="userRole" class="form-control">
+              <option value="Employee">Employee</option>
+              <option value="Student">Student</option>
+              <option value="Admin">Administrator</option>
+              <option value="Visitor">Visitor</option>
+              <option value="Member" selected>Member</option>
+            </select>
+          </div>
+
+          <!-- Captured Photo Preview -->
+          <div id="capturedPreviewContainer" style="display: none; margin-bottom: 1.25rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <img id="capturedThumbnail" src="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--success);">
+              <div>
+                <h4 style="color: #34d399; font-size: 0.95rem;">Face Snapshot Ready</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">128-dimensional biometric vector extracted</p>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btnRegisterSubmit" class="btn" style="width: 100%; padding: 0.9rem; font-size: 1.05rem;">
+            📸 Capture & Save Face
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚙️ Backend API Configuration</h3>
+        <button class="modal-close" id="btnCloseSettings">&times;</button>
+      </div>
+      <div class="form-group">
+        <label for="backendUrlInput">Backend API URL:</label>
+        <input type="text" id="backendUrlInput" class="form-control" placeholder="https://your-backend.onrender.com">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('settingsModal').classList.remove('show')">Cancel</button>
+        <button class="btn" id="btnSaveSettings">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 FacePass AI — Fullstack Face Recognition System | Deployed on <a href="https://vercel.com" target="_blank">Vercel</a> & <a href="https://render.com" target="_blank">Render</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/face-utils.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>
