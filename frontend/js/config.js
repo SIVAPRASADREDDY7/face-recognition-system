@@ -3,9 +3,8 @@
 
 const CONFIG = {
   DEFAULT_LOCAL_API: "http://localhost:5000",
-  // You can set your deployed Render backend URL here or via Settings modal in UI:
-  // e.g., "https://face-recognition-backend.onrender.com"
-  DEFAULT_PROD_API: "http://localhost:5000",
+  // Live Render backend URL:
+  DEFAULT_PROD_API: "https://face-recognition-system-x8ww.onrender.com",
 
   getApiBase() {
     const saved = localStorage.getItem("FACE_API_BASE_URL");
